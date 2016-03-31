@@ -1,0 +1,8 @@
+ros-indigo-catkin-pure-python (0.0.1-0trusty) trusty; urgency=high
+
+  * Provides catkin_npm_update_target() and catkin_npm_update_once()
+  * Contributors: AlexV
+
+ -- AlexV <asmodehn@gmail.com>  Thu, 31 Mar 2016 15:00:00 -0000
+
+
