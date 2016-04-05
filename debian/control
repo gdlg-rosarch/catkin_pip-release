@@ -1,0 +1,12 @@
+Source: ros-indigo-catkin-pure-python
+Section: misc
+Priority: extra
+Maintainer: AlexV <asmodehn@gmail.com>
+Build-Depends: debhelper (>= 9.0.0), python-dev, python-pip, ros-indigo-catkin
+Homepage: http://github.com/asmodehn/catkin_pure_python
+Standards-Version: 3.9.2
+
+Package: ros-indigo-catkin-pure-python
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-dev, python-pip
+Description: Catkin macros to allow using pure python packages in usual catkin workspaces with normal python workflow.
