@@ -2,6 +2,12 @@
 Changelog for package catkin_pure_python
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.0.5 (2016-04-26)
+------------------
+* fix catkin-pip requirements not found in workspace path
+* typo
+* Contributors: alexv
+
 0.0.4 (2016-04-08)
 ------------------
 * Merge remote-tracking branch 'origin/indigo' into indigo
@@ -11,7 +17,7 @@ Changelog for package catkin_pure_python
 0.0.3 (2016-04-07)
 ------------------
 * small refactor to improve cmake messages
-* now specifying source director and exists-action backup when installing reuqirements.
+* now specifying source director and exists-action backup when installing requirements.
   restored previous behavior to check for installed packages before installing current package. this avoid reinstalling dependencies satisfied by requirements.
 * always cleaning cache for catkin_pip for safety.
 * added --ignore-installed so pip doesnt try to remove old packages from system.
