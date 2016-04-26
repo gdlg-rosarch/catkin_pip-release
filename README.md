@@ -1,3 +1,26 @@
+## catkin_pure_python (indigo) - 0.0.5-0
+
+The packages in the `catkin_pure_python` repository were released into the `indigo` distro by running `/usr/bin/bloom-release --track indigo --rosdistro indigo catkin_pure_python` on `Tue, 26 Apr 2016 10:20:47 -0000`
+
+The `catkin_pure_python` package was released.
+
+Version of package(s) in repository `catkin_pure_python`:
+
+- upstream repository: https://github.com/asmodehn/catkin_pure_python.git
+- release repository: https://github.com/asmodehn/catkin_pure_python-release.git
+- rosdistro version: `0.0.4-0`
+- old version: `0.0.4-0`
+- new version: `0.0.5-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.21`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.4`
+- rosdistro version: `0.4.7`
+- vcstools version: `0.1.38`
+
+
 ## catkin_pure_python (indigo) - 0.0.4-0
 
 The packages in the `catkin_pure_python` repository were released into the `indigo` distro by running `/home/alexv/.virtualenvs/bloom/bin/bloom-release --rosdistro indigo --track indigo catkin_pure_python` on `Fri, 08 Apr 2016 03:01:49 -0000`
