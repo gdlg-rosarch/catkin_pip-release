@@ -1,0 +1,100 @@
+ros-indigo-catkin-pure-python (0.1.0-0trusty) trusty; urgency=high
+
+  * separating catkin_pip_setup and catkin_package macros.
+  * now ignoring installed pip packaging when fetching requirements for pipproject.
+  * removing debug output for shell envhook
+  * fixing install procedure to get same structure as the distutils version.
+  * now catkin-pip package is using normal catkin_package(), and installs fine, although with setuptools, which might break packaging...
+  * refactoring cmake include and configure. test project devel space ok. the rest is still broken...
+  * small improvement to do less configuration
+  * now using an envhook to modify pythonpath instead of hacking catkin's _setup_util.py
+  * _setup_util.py hack now done in cmake binary dir instead of final workspace.
+  * Contributors: AlexV, alexv
+
+ -- AlexV <asmodehn@gmail.com>  Sat, 28 May 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.8-0trusty) trusty; urgency=high
+
+  * not writing cmake files into workspace anymore. instead in build directory of each package.
+  * added doc about pip/ros dependency handling.
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Mon, 09 May 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.7-0trusty) trusty; urgency=high
+
+  * removing --ignore-installed for editable package, to allow requirements to satisfy setup.py dependencies.
+  * changing package to format v2
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Sun, 08 May 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.6-0trusty) trusty; urgency=high
+
+  * adding --ignore-installed to avoid pip picking up local editable package when installing.
+  * informative comments
+  * better fix for catkin-pip requirements not found in workspace path
+  * fixing travis to run tests for catkin-pip
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Thu, 28 Apr 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.5-0trusty) trusty; urgency=high
+
+  * fix catkin-pip requirements not found in workspace path
+  * typo
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Mon, 25 Apr 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.4-0trusty) trusty; urgency=high
+
+  * Merge remote-tracking branch 'origin/indigo' into indigo
+  * now prepending site-packages path. also for install space.
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Thu, 07 Apr 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.3-0trusty) trusty; urgency=high
+
+  * small refactor to improve cmake messages
+  * now specifying source director and exists-action backup when installing requirements.
+    restored previous behavior to check for installed packages before installing current package. this avoid reinstalling dependencies satisfied by requirements.
+  * always cleaning cache for catkin_pip for safety.
+  * added --ignore-installed so pip doesnt try to remove old packages from system.
+    quick Readme Roadmap
+  * Contributors: alexv
+
+ -- AlexV <asmodehn@gmail.com>  Wed, 06 Apr 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.2-0trusty) trusty; urgency=high
+
+  * cleaning up cmake ouput. fixing install sys pip path and pippkg path.
+  * Merge pull request #2 <https://github.com/asmodehn/catkin_pure_python/issues/2> from asmodehn/install_rules
+    Install rules
+  * improve pip finding. fixed install.
+  * restructuring to get install running same code as devel
+  * adding git ignore and cmake file for building mypippkg test
+  * removed ROS dependency on cookiecutter since we need to get it from pip.
+  * added travis build status
+  * fixing default argument for catkin_pip_package
+    fixing catkin_pure_python test build.
+  * attempting to fix nose and tests...
+  * improved environment detection and setup.
+  * improved readme
+  * fixed changelog
+  * Contributors: AlexV
+
+ -- AlexV <asmodehn@gmail.com>  Sun, 03 Apr 2016 15:00:00 -0000
+
+ros-indigo-catkin-pure-python (0.0.1-0trusty) trusty; urgency=high
+
+  * fixing install rules.
+    improving pip download by using cache for catkin-pip requirements.
+  * now devel workspace populated with latest pip.
+  * first version of package. still trying stuff out...
+  * Contributors: AlexV
+
+ -- AlexV <asmodehn@gmail.com>  Wed, 30 Mar 2016 15:00:00 -0000
+
+
