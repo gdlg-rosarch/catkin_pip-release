@@ -1,173 +1,97 @@
-#
-# This script is in charge of doing the pip setup in a workspace.
-# It will be configured by cmake and dropped in devel or install workspace
-# where it will setup a workspace emulation of virtualenvs
-#
+message(STATUS "Loading catkin-pip-setup.cmake from ${CMAKE_CURRENT_LIST_DIR}... ")
 
-message(STATUS "Loading ${CMAKE_CURRENT_LIST_FILE}... ")
+# protecting against missing cmake file
+include ( "${CMAKE_CURRENT_LIST_DIR}/catkin-pip-env.cmake" RESULT_VARIABLE CATKIN_PIP_ENV_FOUND )
+IF ( NOT CATKIN_PIP_ENV_FOUND )
+    message ( FATAL_ERROR "{CMAKE_CURRENT_LIST_DIR}/catkin-pip-env.cmake Not Found !!!" )
+ENDIF ( NOT CATKIN_PIP_ENV_FOUND )
 
-if ( NOT CATKIN_PIP_GLOBAL_PYTHON_DESTINATION )
-    # using site-packages as it is the default for pip and should also be used on debian systems for installs from non system packages
-    # Explanation here : http://stackoverflow.com/questions/9387928/whats-the-difference-between-dist-packages-and-site-packages
-    set (CATKIN_PIP_GLOBAL_PYTHON_DESTINATION "lib/python2.7/site-packages")
+# protecting against missing cmake file
+include ( "${CMAKE_CURRENT_LIST_DIR}/catkin-pip-runcmd.cmake" RESULT_VARIABLE CATKIN_PIP_RUNCMD_FOUND )
+IF ( NOT CATKIN_PIP_RUNCMD_FOUND )
+    message ( FATAL_ERROR "{CMAKE_CURRENT_LIST_DIR}/catkin-pip-runcmd.cmake Not Found !!!" )
+ENDIF ( NOT CATKIN_PIP_RUNCMD_FOUND )
+
+# protecting against missing cmake file
+include ( "${CMAKE_CURRENT_LIST_DIR}/catkin-pip-prefix.cmake" RESULT_VARIABLE CATKIN_PIP_PREFIX_FOUND )
+IF ( NOT CATKIN_PIP_PREFIX_FOUND )
+    message ( FATAL_ERROR "{CMAKE_CURRENT_LIST_DIR}/catkin-pip-prefix.cmake Not Found !!!" )
+ENDIF ( NOT CATKIN_PIP_PREFIX_FOUND )
+
+
+
+if ( NOT CATKIN_PIP_TEMPLATES_PATH )
+    # templates should found relative to our current path
+    set (CATKIN_PIP_TEMPLATES_PATH ${CMAKE_CURRENT_LIST_DIR}/../templates)
 endif()
 
-# Make sure the catkin python package directory for the workspace is in python path
-# this is only needed if the user didn't source the current workspace setup.bash (happens the first time)
-string(FIND "$ENV{PYTHONPATH}" @CONFIGURE_PREFIX@/${CATKIN_GLOBAL_PYTHON_DESTINATION} FOUND_PPATH)
-if ( FOUND_PPATH LESS 0 )
-    set(ENV{PYTHONPATH} "@CONFIGURE_PREFIX@/${CATKIN_GLOBAL_PYTHON_DESTINATION}:$ENV{PYTHONPATH}")
-endif()
+# We are replacing catkin's python_setup functionality
+function(catkin_pip_python_setup)
 
-# Make sure the pip target directory for the workspace is in python path
-# this is only needed if the user didn't source the current workspace setup.bash (happens the first time)
-string(FIND "$ENV{PYTHONPATH}" @CONFIGURE_PREFIX@/${CATKIN_PIP_GLOBAL_PYTHON_DESTINATION} FOUND_PPPATH)
-if ( FOUND_PPPATH LESS 0 )
-    set(ENV{PYTHONPATH} "@CONFIGURE_PREFIX@/${CATKIN_PIP_GLOBAL_PYTHON_DESTINATION}:$ENV{PYTHONPATH}")
-endif()
+    # Setting up variables for scripts configuration (in a function to keep it here)
+    set(CATKIN_PIP_PACKAGE_PATH ${package_path})
 
-# Make sure the bin target directory for the workspace is in system path
-# this is only needed if the user didn't source the current workspace setup.bash (happens the first time)
-string(FIND "$ENV{PATH}" @CONFIGURE_PREFIX@/${CATKIN_GLOBAL_BIN_DESTINATION} FOUND_SPATH)
-if ( FOUND_SPATH LESS 0 )
-    set(ENV{PATH} "@CONFIGURE_PREFIX@/${CATKIN_GLOBAL_BIN_DESTINATION}:$ENV{PATH}")
-endif()
+    # BEGIN : This is from catkin_python_setup
+    # we follow same process but with slightly different scripts
+    #
 
-# Hacking existing ROS setup
+      assert(PYTHON_INSTALL_DIR)
+      set(INSTALL_CMD_WORKING_DIRECTORY ${package_path})
 
-# _setup_util.py should already exist here.
-# catkin should have done the workspace setup before we reach here
-if ( EXISTS @CONFIGURE_PREFIX@/_setup_util.py )
-    file(READ @CONFIGURE_PREFIX@/_setup_util.py  SETUP_UTIL_PY)
-    string(REPLACE
-        "'PYTHONPATH': 'lib/python2.7/dist-packages',"
-        "'PYTHONPATH': ['${CATKIN_PIP_GLOBAL_PYTHON_DESTINATION}', 'lib/python2.7/dist-packages']"
-        PATCHED_SETUP_UTIL_PY
-        "${SETUP_UTIL_PY}"
-    )
-    file(WRITE @CONFIGURE_PREFIX@/_setup_util.py  "${PATCHED_SETUP_UTIL_PY}")
-else()
-    message(FATAL_ERROR "SETUP_UTIL.PY DOES NOT EXISTS YET in @CONFIGURE_PREFIX@")
-endif()
+      if(NOT WIN32)
+        set(INSTALL_SCRIPT
+          ${CMAKE_CURRENT_BINARY_DIR}/catkin_generated/python_setuptools_install.sh)
+        configure_file(${CATKIN_PIP_TEMPLATES_PATH}/python_setuptools_install.sh.in
+          ${INSTALL_SCRIPT}
+          @ONLY)
+      else()
+        # need to convert install prefix to native path for python setuptools --prefix (its fussy about \'s)
+        file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX} PYTHON_INSTALL_PREFIX)
+        set(INSTALL_SCRIPT
+          ${CMAKE_CURRENT_BINARY_DIR}/catkin_generated/python_setuptools_install.bat)
+        configure_file(${CATKIN_PIP_TEMPLATES_PATH}/python_setuptools_install.bat.in
+          ${INSTALL_SCRIPT}
+          @ONLY)
+      endif()
 
-message(STATUS "Catkin pip PYTHONPATH : $ENV{PYTHONPATH}")
-message(STATUS "Catkin pip PATH : $ENV{PATH}")
+      # generate python script which gets executed at install time
+      configure_file(${catkin_EXTRAS_DIR}/templates/safe_execute_install.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/catkin_generated/safe_execute_install.cmake)
+      install(SCRIPT ${CMAKE_CURRENT_BINARY_DIR}/catkin_generated/safe_execute_install.cmake)
 
-# Note : this is obviously not changing anything in the shell environment where cmake was started from.
-# And WE DO NOT WANT to do it there. The user controls his bash environment independently of what runs in it.
+    # END : This is the end of catkin_python_setup copy
+    # Ideally we shouldn't need any more tricks for building the install space
+    #
 
-# Default command to install requirements
-if ( NOT PIP_REQUIREMENTS_INSTALL_COMMAND)
-    set(PIP_REQUIREMENTS_INSTALL_COMMAND install -r \@requirements_arg\@ --ignore-installed --src ${CMAKE_SOURCE_DIR} --exists-action b --prefix "@CONFIGURE_PREFIX@")
-endif()
+endfunction()
 
-# Note : we need to install our fixups as normal requirements
-macro(catkin_pip_requirements_prefix requirements_txt )
-    set(requirements_arg ${requirements_txt})
-    # doing the extra expansion to get requirements_txt
-    string(CONFIGURE "${PIP_REQUIREMENTS_INSTALL_COMMAND}" EXPANDED_PIP_REQUIREMENTS_INSTALL_COMMAND @ONLY)
-    # message(STATUS "EXPANDED_PIP_REQUIREMENTS_INSTALL_COMMAND ${EXPANDED_PIP_REQUIREMENTS_INSTALL_COMMAND}")
-    set(FULL_CMD ${CATKIN_PIP} ${EXPANDED_PIP_REQUIREMENTS_INSTALL_COMMAND})
+macro(catkin_pip_setup)
 
-    string(REPLACE ";" " " PIP_REQUIREMENTS_INSTALL_CMDSTR "${FULL_CMD}")
-    message(STATUS "    ... Running ${PIP_REQUIREMENTS_INSTALL_CMDSTR} ...")
+    set (extra_macro_args ${ARGN})
 
-    execute_process(
-      COMMAND ${FULL_CMD}
-      WORKING_DIRECTORY @CMAKE_CURRENT_SOURCE_DIR@
-      RESULT_VARIABLE PIP_RESULT
-      OUTPUT_VARIABLE PIP_VARIABLE
-      ERROR_VARIABLE PIP_ERROR
-    )
-
-    message(STATUS "    ... Done ... [${PIP_RESULT}]: ${PIP_VARIABLE}")
-    if (PIP_RESULT)
-        message(STATUS "Command ${PIP_REQUIREMENTS_INSTALL_CMDSTR} FAILED !")
-        message(FATAL_ERROR "${PIP_ERROR}")
-    endif()
-endmacro()
-
-macro(catkin_pip_package_prefix package_path)
-    string(REPLACE ";" " " PIP_PACKAGE_INSTALL_CMDSTR "@PIP_PACKAGE_INSTALL_COMMAND@")
-    message(STATUS "    ... Running ${PIP_PACKAGE_INSTALL_CMDSTR} ...")
-
-    execute_process(
-      COMMAND @PIP_PACKAGE_INSTALL_COMMAND@
-      WORKING_DIRECTORY @CMAKE_CURRENT_SOURCE_DIR@
-      RESULT_VARIABLE PIP_RESULT
-      OUTPUT_VARIABLE PIP_VARIABLE
-      ERROR_VARIABLE PIP_ERROR
-    )
-
-    message(STATUS "    ... Done ... [${PIP_RESULT}]: ${PIP_VARIABLE}")
-    if (PIP_RESULT)
-        message(STATUS "Command ${PIP_PACKAGE_INSTALL_CMDSTR} FAILED !")
-        message(FATAL_ERROR "${PIP_ERROR}")
-    endif()
-endmacro()
-
-
-# Trying to find our own pip
-# Careful this creates a CACHE variable that we need to recreate here in case people clean devel without cleaning build
-unset(CATKIN_PIP CACHE)
-find_program(CATKIN_PIP NAMES pip pip2 pip2.7 PATHS @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@ NO_DEFAULT_PATH)
-
-if (CATKIN_PIP)
-    message(STATUS "    ... Catkin pip was found at ${CATKIN_PIP} ...")
-else ()
-    # If not found, it means we need to do the whole setup...
-    unset(CATKIN_PIP CACHE)
-    message(STATUS "    ... Catkin pip was not found in @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@ ...")
-    # Assuming Ubuntu Trusty here. platform detection is another hurdle
-    set(CMAKE_SYSTEM_PREFIX_PATH / /usr /usr/local)
-    find_program(CATKIN_SYS_PIP NAMES pip pip2 pip2.7 NO_CMAKE_PATH NO_CMAKE_ENVIRONMENT_PATH NO_SYSTEM_ENVIRONMENT_PATH)  # we need to make sure we don't find any other catkin-pip from somewhere else if our path is not clean (careful with underlays or install/devel)
-    if(NOT CATKIN_SYS_PIP)
-        message( FATAL_ERROR "pip system command not found. Make sure you have installed the python-pip package on your system.")
-    endif()
-
-    message(STATUS "    ... Retrieving catkin_pure_python requirements using system pip ...")
-
-    # We need to find a pip command that works for old pip versions (indigo supports trusty which is pip v1.5.4)
-    # Note --target here means we cannot check if a package is already installed or not before installing, using old pip.
-    # which means we have to reinstall dependencies everytime and specify --exists-action w to avoid "already exists" errors
-    # Avoid --install-option since the setuptools version found will be different the first time and the following times
-    execute_process(
-      COMMAND ${CATKIN_SYS_PIP} -q install -r "@CATKIN_PIP_REQUIREMENTS_PATH@/catkin-pip-base.req" --download-cache "${CMAKE_BINARY_DIR}/pip-cache" --target "@CONFIGURE_PREFIX@/${CATKIN_PIP_GLOBAL_PYTHON_DESTINATION}" --exists-action w
-      WORKING_DIRECTORY @CMAKE_CURRENT_SOURCE_DIR@
-      RESULT_VARIABLE PIP_RESULT
-      OUTPUT_VARIABLE PIP_VARIABLE
-      ERROR_VARIABLE PIP_ERROR
-    )
-
-    message(STATUS "    ... Done ... [${PIP_RESULT}]: ${PIP_VARIABLE}")
-    if (PIP_RESULT)
-        message(STATUS "Command ${CATKIN_SYS_PIP} install -r \"@CATKIN_PIP_REQUIREMENTS_PATH@/catkin-pip-base.req\" --download-cache \"${CMAKE_BINARY_DIR}/pip-cache\" --target \"@CONFIGURE_PREFIX@/${CATKIN_PIP_GLOBAL_PYTHON_DESTINATION}\" --exists-action w FAILED")
-        message(FATAL_ERROR "${PIP_ERROR}")
-    endif()
-
-    set(CATKIN_PIP python -m pip)  # to make sure we use our recently downloaded pip version (its entrypoints were not installed by old pip/setuptools)
-    unset(CATKIN_SYS_PIP CACHE)  # we dont need this any longer
-
-    # Fixing security since python 2.7.6 on trusty is broken : https://stackoverflow.com/questions/29099404/ssl-insecureplatform-error-when-using-requests-package
-    # Also reinstalling pip to finally get it in bin/
-    catkin_pip_requirements_prefix("@CATKIN_PIP_REQUIREMENTS_PATH@/catkin-pip-fixups.req")
-
-    unset(CATKIN_PIP)
-    # now we can finally use the simple "pip" entry_point (forcing cmake to find it)
-    find_program( CATKIN_PIP NAMES pip pip2 pip2.7 PATHS @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@ NO_DEFAULT_PATH)
-    if (CATKIN_PIP)
-        message( STATUS "Found catkin_pure_python pip command at ${CATKIN_PIP}.")
+    # Did we get any optional args?
+    list(LENGTH extra_macro_args num_extra_args)
+    if (${num_extra_args} GREATER 0)
+        list(GET extra_macro_args 0 package_path)
+        #message ("Got package_path: ${package_path}")
     else()
-        message( FATAL_ERROR "catkin_pure_python pip command not found in @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@. Make sure you have installed the pip pip package on @CONFIGURE_PREFIX@ workspace.")
+        set(package_path ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    # Providing another catkin nosetests usage...
-    # now we can finally use the simple "nosetests" entry_point (forcing cmake to find it)
-    find_program( PIP_NOSETESTS NAMES nosetests PATHS @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@ NO_DEFAULT_PATH)
-    if(PIP_NOSETESTS)
-        message( STATUS "Found catkin_pure_python nosetests command at ${PIP_NOSETESTS}.")
-    else()
-        message( FATAL_ERROR "catkin_pure_python nosetests command not found in @CONFIGURE_PREFIX@/@CATKIN_GLOBAL_BIN_DESTINATION@. Make sure you have installed the nose pip package on your @CONFIGURE_PREFIX@ workspace.")
+    # Note : environment should already be setup at configure time for devel
+
+    # Then we can run the pip command
+    catkin_pip_runcmd(${CATKIN_PIP} install -e ${package_path} --prefix "${CATKIN_DEVEL_PREFIX}")
+
+    if(NOT EXISTS ${package_path}/setup.py)
+        message(FATAL_ERROR "catkin_pip_setup() called without 'setup.py' in project folder '${package_path}'")
     endif()
 
-endif()
+    catkin_pip_python_setup()
+
+    # TODO : we might want to generate a package.xml on the fly from setup.py contents...
+
+    # Hijacking catkin scripts again
+    #set(_PACKAGE_XML_DIRECTORY ${package_path})
+
+endmacro()
