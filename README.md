@@ -1,3 +1,26 @@
+## catkin_pip (jade) - 0.1.3-0
+
+The packages in the `catkin_pip` repository were released into the `jade` distro by running `/usr/bin/bloom-release --track jade --rosdistro jade catkin_pip` on `Thu, 02 Jun 2016 01:34:32 -0000`
+
+The `catkin_pip` package was released.
+
+Version of package(s) in repository `catkin_pip`:
+
+- upstream repository: https://github.com/asmodehn/catkin_pure_python.git
+- release repository: unknown
+- rosdistro version: `null`
+- old version: `null`
+- new version: `0.1.3-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.21`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.4`
+- rosdistro version: `0.4.7`
+- vcstools version: `0.1.38`
+
+
 ## catkin_pure_python (indigo) - 0.1.3-0
 
 The packages in the `catkin_pure_python` repository were released into the `indigo` distro by running `/usr/bin/bloom-release --track indigo --rosdistro indigo catkin_pure_python` on `Wed, 01 Jun 2016 10:09:16 -0000`
