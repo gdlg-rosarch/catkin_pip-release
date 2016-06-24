@@ -36,7 +36,7 @@ tracks:
       -i :{release_inc} --os-name debian --os-not-required
     - git-bloom-generate -y rosrpm --prefix release/:{ros_distro} :{ros_distro} -i
       :{release_inc}
-    devel_branch: jade
+    devel_branch: jade-devel
     last_version: 0.1.8
     name: upstream
     patches: null
@@ -45,5 +45,5 @@ tracks:
     release_tag: :{version}
     ros_distro: jade
     vcs_type: git
-    vcs_uri: https://github.com/asmodehn/catkin_pure_python.git
+    vcs_uri: https://github.com/asmodehn/catkin_pip.git
     version: :{ask}
