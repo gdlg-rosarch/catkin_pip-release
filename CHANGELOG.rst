@@ -1,6 +1,30 @@
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Changelog for package catkin_pip
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+0.1.15 (2016-09-01)
+-------------------
+* now transferring paths from pth in devel site-packages to pythonpath shell env, to handle egg-link and workspace overlaying together...
+* adding current devel space dist-packages via envhook to get it even if env not sourced... is it a good idea ?
+* officially not supporting broken old pip on EOL saucy.
+* Contributors: AlexV, alexv
+
+0.1.14 (2016-08-30)
+-------------------
+* Merge pull request `#44 <https://github.com/asmodehn/catkin_pip/issues/44>`_ from asmodehn/pip_system
+  Now checking for pip --system option before using.
+* Now checking for pip --system option before using.
+  cleanup some cmake status messages.
+* improving pip detection
+* Contributors: AlexV, alexv
+
+0.1.13 (2016-08-28)
+-------------------
+* fixing install rule for moved script.
+* getting rid of rospack dependency. didnt always work.
+  moved pythonpath_prepend shell script to use it via cmake variable.
+* now checking system pip version to choose command line arguments for setup
+* Contributors: AlexV
 
 0.1.12 (2016-08-27)
 -------------------
