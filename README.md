@@ -1,3 +1,26 @@
+## catkin_pip (indigo) - 0.1.17-0
+
+The packages in the `catkin_pip` repository were released into the `indigo` distro by running `/usr/bin/bloom-release --rosdistro indigo --track indigo catkin_pip` on `Fri, 13 Jan 2017 01:11:33 -0000`
+
+The `catkin_pip` package was released.
+
+Version of package(s) in repository `catkin_pip`:
+
+- upstream repository: https://github.com/asmodehn/catkin_pip.git
+- release repository: https://github.com/asmodehn/catkin_pip-release.git
+- rosdistro version: `0.1.16-0`
+- old version: `0.1.16-0`
+- new version: `0.1.17-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.23`
+- catkin_pkg version: `0.2.10`
+- rosdep version: `0.11.5`
+- rosdistro version: `0.5.0`
+- vcstools version: `0.1.39`
+
+
 ## catkin_pip (indigo) - 0.1.16-0
 
 The packages in the `catkin_pip` repository were released into the `indigo` distro by running `/usr/bin/bloom-release --rosdistro indigo --track indigo catkin_pip` on `Tue, 13 Sep 2016 01:57:22 -0000`
