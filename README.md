@@ -1,3 +1,26 @@
+## catkin_pip (kinetic) - 0.2.3-0
+
+The packages in the `catkin_pip` repository were released into the `kinetic` distro by running `/usr/bin/bloom-release --rosdistro kinetic --track kinetic catkin_pip` on `Fri, 11 Aug 2017 02:54:24 -0000`
+
+The `catkin_pip` package was released.
+
+Version of package(s) in repository `catkin_pip`:
+
+- upstream repository: https://github.com/pyros-dev/catkin_pip.git
+- release repository: https://github.com/asmodehn/catkin_pip-release.git
+- rosdistro version: `0.2.2-0`
+- old version: `0.2.2-0`
+- new version: `0.2.3-0`
+
+Versions of tools used:
+
+- bloom version: `0.5.26`
+- catkin_pkg version: `0.3.5`
+- rosdep version: `0.11.5`
+- rosdistro version: `0.6.2`
+- vcstools version: `0.1.39`
+
+
 ## catkin_pip (lunar) - 0.2.3-0
 
 The packages in the `catkin_pip` repository were released into the `lunar` distro by running `/usr/bin/bloom-release --rosdistro lunar --track lunar catkin_pip` on `Fri, 11 Aug 2017 02:00:54 -0000`
