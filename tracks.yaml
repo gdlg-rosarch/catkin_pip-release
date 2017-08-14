@@ -21,7 +21,7 @@ tracks:
     release_tag: :{version}
     ros_distro: indigo
     vcs_type: git
-    vcs_uri: https://github.com/asmodehn/catkin_pip.git
+    vcs_uri: https://github.com/pyros-dev/catkin_pip.git
     version: :{ask}
   jade:
     actions:
@@ -45,7 +45,7 @@ tracks:
     release_tag: :{version}
     ros_distro: jade
     vcs_type: git
-    vcs_uri: https://github.com/asmodehn/catkin_pip.git
+    vcs_uri: https://github.com/pyros-dev/catkin_pip.git
     version: :{ask}
   kinetic:
     actions:
